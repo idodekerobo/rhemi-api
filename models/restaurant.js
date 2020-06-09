@@ -16,7 +16,7 @@ var restaurantSchema = new mongoose.Schema({
       type: String
    },
    city: {
-      type: String
+      type: String 
    },
    state: {
       type: String
