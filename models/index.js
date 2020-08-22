@@ -1,10 +1,9 @@
 // import './credentials';
 const mongoose = require('mongoose');
-const credentials = require('../credentials');
- 
+
 mongoose.set('debug', true); // allows us to see whats being sent to db
 
-const db = credentials.MONGO_DB_CONN;
+const db = process.env.MONGO_DB_CONN;
 mongoose.connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true

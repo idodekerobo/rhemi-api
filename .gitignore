@@ -1,2 +1,3 @@
 # IGNORE THESE FILES
 credentials.js
+.env
