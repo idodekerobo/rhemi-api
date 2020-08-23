@@ -10,7 +10,7 @@ const db = require('../models/index');
 
 const TAX_RATE = 0.1;
 
-function mongoDbErrorHandling(err) {
+function errorHandling(err) {
       console.log();
       console.log('There was an error!');
       console.log(err);
@@ -32,14 +32,9 @@ const calculateOrderAmount = (items) => {
         CHECKOUT ROUTES
 ==============================
 */
-// router.post('/checkout', async (req, res) => {
 router.post('/checkout', async (req, res) => {
-
    // TODO - save the data of the user and their order in the database
    const data = req.body;
-   console.log();
-   console.log('data coming from client', data);
-   console.log();
    const amount = calculateOrderAmount(data.items);
 
    await stripe.paymentIntents.create(
@@ -60,15 +55,12 @@ router.post('/checkout', async (req, res) => {
          });
       } catch (err) {
          // TODO - handle errors here, would be a server/network error
+         errorHandling(err);
          return res.status(500).send({
             error: err.message
          });
       }
    });
 });
-
-// router.get('/checkout', async (req, res) => {
-
-// });
 
 module.exports = router;
