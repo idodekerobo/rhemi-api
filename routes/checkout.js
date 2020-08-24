@@ -34,6 +34,7 @@ const calculateOrderAmount = (items) => {
 */
 router.post('/checkout', async (req, res) => {
    // TODO - save the data of the user and their order in the database
+   console.log(req.body);
    const data = req.body;
    const amount = calculateOrderAmount(data.items);
 
