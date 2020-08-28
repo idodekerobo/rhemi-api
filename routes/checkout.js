@@ -78,7 +78,8 @@ router.get('/onlineorders', (req, res) => {
    res.send('this shit on?');
 })
 
-// TODO - fix this, currently not working w/ Stripe CLI
+// TODO - FIX THIS WEBHOOK, currently not working w/ Stripe CLI
+   // trying to send notif that a new order was made to the local server. that way restarurants can see order and details
 router.post('/onlineorders', bodyParser.raw({type: 'application/json'}), (req, res) => {
    const sig = req.headers['stripe-signature']; // this optional but can sign the request to ensure it came from stripe
 
