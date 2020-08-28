@@ -4,6 +4,8 @@ const stripe = require("stripe")(process.env.STRIPE_TEST_KEY)
 
 // Require database in router
 const db = require('../models/index');
+const bodyParser = require('body-parser');
+const { response } = require('express');
 
 // do i want to start w/ api???
 // EVERY URL STARTS WITH /API/
@@ -62,6 +64,56 @@ router.post('/checkout', async (req, res) => {
          });
       }
    });
+});
+
+const webhook_secret = 'whsec_QFL5uYxudbk8eQNgvD6vgBvGnzGA7tkF'; // this should be in settings????
+const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
+   // fulfill the purchase logic
+   console.log('payment intent successfully triggered the webhook!! - idode');
+   console.log('Connected account id', connectedAccountId);
+   console.log(JSON.stringify(paymentIntent));
+}
+
+router.get('/onlineorders', (req, res) => {
+   res.send('this shit on?');
+})
+
+// TODO - fix this, currently not working w/ Stripe CLI
+router.post('/onlineorders', bodyParser.raw({type: 'application/json'}), (req, res) => {
+   const sig = req.headers['stripe-signature']; // this optional but can sign the request to ensure it came from stripe
+
+   let event;
+
+   // verify webhook signature and extract event
+   try {
+      // event = stripe.webhooks.constructEvent(req.body, webhook_secret);
+      event = JSON.parse(req.body);
+   } catch (err) {
+      return res.status(400).send(`Webhook error: ${err.message}`);
+   }
+
+   // if (event.type === 'payment_intent.succeeded') {
+   //    const paymentIntent = event.data.object;
+   //    const connectedAccountId = event.account;
+   //    handleSuccessfulPaymentIntent(connectedAccountId, paymentIntent);
+   // }
+
+   switch (event.type) {
+      case 'payment_intent.succeeded':
+         const paymentIntent = event.data.object;
+         console.log('payment intent was successful... now do stuff');
+         break;
+      case 'payment_method.attached': 
+         const paymentMethod = event.data.object;
+         console.log('payment method was attached to a customer');
+         // handle other event types
+         break;
+      default:
+         return response.status(400).end();
+   }
+
+   // returns a 200 response to acknowledge receipt of the event
+   res.json({received: true});
 });
 
 module.exports = router;
