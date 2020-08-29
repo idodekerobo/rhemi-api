@@ -7,9 +7,6 @@ const db = require('../models/index');
 const bodyParser = require('body-parser');
 const { response } = require('express');
 
-// do i want to start w/ api???
-// EVERY URL STARTS WITH /API/
-
 const TAX_RATE = 0.1;
 
 function errorHandling(err) {
@@ -17,7 +14,6 @@ function errorHandling(err) {
       console.log('There was an error!');
       console.log(err);
       console.log();
-      // return res.send(err);
       return res.send(500, { error: err });
 }
 
@@ -26,7 +22,8 @@ const calculateOrderAmount = (items) => {
    const tax = (subtotal * TAX_RATE).toFixed(2);
    const total = (parseFloat(subtotal) + parseFloat(tax)).toFixed(2);
 
-   return (subtotal*100);
+   // return (subtotal*100);
+   return (total*100); // returning the total w/ sales tax
 }
 
 /*
@@ -91,26 +88,22 @@ router.post('/onlineorders', bodyParser.raw({type: 'application/json'}), (req, r
       return res.status(400).send(`there's a mf Webhook error!!!: ${err.message}`);
    }
 
-   // if (event.type === 'payment_intent.succeeded') {
-   //    const paymentIntent = event.data.object;
-   //    const connectedAccountId = event.account;
-   //    handleSuccessfulPaymentIntent(connectedAccountId, paymentIntent);
-   // }
-
-   // handle all the webhook events types we want to monitor
+   // TODO - figure out how to extract items out of webhook event so can pass to restaurant
+   // TODO - write logic to send to add to order list
    switch (event.type) {
       case 'payment_intent.succeeded':
-         const paymentIntent = event.data.object;
-         console.log('payment intent was successful... now do stuff');
-         console.log(paymentIntent);
-         console.log('charge data in payment intent');
-         console.log(paymentIntent.charges.data);
+         // const paymentIntent = event.data.object;
          break;
       case 'payment_method.attached': 
-         const paymentMethod = event.data.object;
-         console.log('payment method was attached to a customer');
-         console.log(paymentMethod);
-         // handle other event types
+         // const paymentMethod = event.data.object;
+         break;
+      case 'payment_intent.payment_failed':
+         break;
+      case 'charge.succeeded':
+         // const chargeSuccess = event.data.object;
+         break;
+      case 'charge.failed': 
+         // console.log('charge failed');
          break;
       default:
          return response.status(400).end();
