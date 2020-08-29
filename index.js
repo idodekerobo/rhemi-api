@@ -5,8 +5,16 @@ const stripe = require("stripe")(process.env.STRIPE_TEST_KEY)
 const app = express();
 const PORT = process.env.PORT;
 
-// middleware
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+   // adding middleware so can use raw body for webhook logic w/ stripe
+   // stack overflow that helped: https://stackoverflow.com/questions/53899365/stripe-error-no-signatures-found-matching-the-expected-signature-for-payload
+   verify: function(req, res, buf) {
+      var url = req.originalUrl;
+      if (url.startsWith('/api/onlineorders')) {
+         req.rawBody = buf.toString();
+      }
+   }
+}));
 app.use(bodyParser.urlencoded({extended: true}));
 
 // Require Routes 

@@ -36,7 +36,7 @@ const calculateOrderAmount = (items) => {
 */
 router.post('/checkout', async (req, res) => {
    // TODO - save the data of the user and their order in the database
-   console.log(req.body);
+   // console.log(req.body);
    const data = req.body;
    const amount = calculateOrderAmount(data.items);
 
@@ -66,7 +66,12 @@ router.post('/checkout', async (req, res) => {
    });
 });
 
-const webhook_secret = 'whsec_QFL5uYxudbk8eQNgvD6vgBvGnzGA7tkF'; // this should be in settings????
+// TEST WEBHOOK
+// const webhookSecret = process.env.TEST_WEBHOOK_SECRET;
+
+// LIVE WEBHOOK
+const webhookSecret = process.env.LIVE_WEBHOOK_SECRET;
+
 const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
    // fulfill the purchase logic
    console.log('payment intent successfully triggered the webhook!! - idode');
@@ -74,23 +79,16 @@ const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
    console.log(JSON.stringify(paymentIntent));
 }
 
-router.get('/onlineorders', (req, res) => {
-   res.send('this shit on?');
-})
-
-// TODO - FIX THIS WEBHOOK, currently not working w/ Stripe CLI
-   // trying to send notif that a new order was made to the local server. that way restarurants can see order and details
+// trying to send notif that a new order was made to the local server. that way restarurants can see order and details
 router.post('/onlineorders', bodyParser.raw({type: 'application/json'}), (req, res) => {
-   const sig = req.headers['stripe-signature']; // this optional but can sign the request to ensure it came from stripe
-
+   const sig = req.headers["stripe-signature"];
    let event;
 
-   // verify webhook signature and extract event
    try {
-      // event = stripe.webhooks.constructEvent(req.body, webhook_secret);
-      event = JSON.parse(req.body);
+      event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
    } catch (err) {
-      return res.status(400).send(`Webhook error: ${err.message}`);
+      console.log(`❌ Error message: ${err.message}`);
+      return res.status(400).send(`there's a mf Webhook error!!!: ${err.message}`);
    }
 
    // if (event.type === 'payment_intent.succeeded') {
@@ -99,14 +97,19 @@ router.post('/onlineorders', bodyParser.raw({type: 'application/json'}), (req, r
    //    handleSuccessfulPaymentIntent(connectedAccountId, paymentIntent);
    // }
 
+   // handle all the webhook events types we want to monitor
    switch (event.type) {
       case 'payment_intent.succeeded':
          const paymentIntent = event.data.object;
          console.log('payment intent was successful... now do stuff');
+         console.log(paymentIntent);
+         console.log('charge data in payment intent');
+         console.log(paymentIntent.charges.data);
          break;
       case 'payment_method.attached': 
          const paymentMethod = event.data.object;
          console.log('payment method was attached to a customer');
+         console.log(paymentMethod);
          // handle other event types
          break;
       default:
