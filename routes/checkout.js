@@ -23,7 +23,7 @@ const calculateOrderAmount = (items) => {
    const total = (parseFloat(subtotal) + parseFloat(tax)).toFixed(2);
 
    // return (subtotal*100);
-   return (total*100); // returning the total w/ sales tax
+   return ((total*100).toFixed(0)); // returning the total w/ sales tax. fixing to 0 because we only need the two decimal points
 }
 
 /*
@@ -63,11 +63,8 @@ router.post('/checkout', async (req, res) => {
    });
 });
 
-// TEST WEBHOOK
-// const webhookSecret = process.env.TEST_WEBHOOK_SECRET;
-
-// LIVE WEBHOOK
-const webhookSecret = process.env.LIVE_WEBHOOK_SECRET;
+// const webhookSecret = process.env.TEST_WEBHOOK_SECRET; // TEST WEBHOOK
+const webhookSecret = process.env.LIVE_WEBHOOK_SECRET; // LIVE WEBHOOK
 
 const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
    // fulfill the purchase logic
