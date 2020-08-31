@@ -14,6 +14,21 @@ function mongoDbErrorHandling(err) {
       // return res.send(err);
       return res.send(500, { error: err });
 }
+const TAX_RATE = 0.1;
+const calculateOrderAmount = (items) => {
+   const subtotal = items.slice().reduce((acc, obj) => (acc += obj.price), 0).toFixed(2);
+   const tax = (subtotal * TAX_RATE).toFixed(2);
+   const total = (parseFloat(subtotal) + parseFloat(tax)).toFixed(2);
+
+   const price = {
+      subtotal,
+      tax,
+      total
+   }
+   // return (subtotal*100);
+   // return ((total*100).toFixed(0)); // returning the total w/ sales tax. fixing to 0 because we only need the two decimal points
+   return price;
+}
 
 /*
 ==============================
@@ -68,19 +83,21 @@ router.get('/order/:orderid', (req, res) => {
 
 // sending order to database
 router.post('/order', (req, res) => {
-   // putting the id's of items into an array
-   // let items = [];
-   // items.push
-   var cost = Number(req.body.cost);
-   var taxRate = .12
-   var tax = cost * taxRate;
-   var totalCost = cost + tax;
+
+   const priceObj = calculateOrderAmount(req.body.items);
+
    const order = new db.Order({
-      customer: req.body.name, // EVENTUALLY WILL BE OBJECT ID OF CUSTOMER
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phone: req.body.phone,
+      city: req.body.city,
+      state: req.body.customerState,
+      zip: req.body.zip,
       orderItems: req.body.items, // WILL GRAB OBJECT ID'S OF SELECTED MENU ITEMS
-      cost: 20, // sum the total cost of items have to look up how to make sure these get counted as currency so no issues w/ decimals
-      tax, // whatever the tax rate is
-      totalCost,
+      subtotal: priceObj.subtotal, // sum the total cost of items have to look up how to make sure these get counted as currency so no issues w/ decimals
+      tax: priceObj.tax, // whatever the tax rate is
+      totalCost: priceObj.total,
    });
 
    order
@@ -93,7 +110,7 @@ router.post('/order', (req, res) => {
          mongoDbErrorHandling(err);
       });
    // res.redirect( [redirect page]);
-   res.send('thank you for the order!');
+   res.send('client side response: order has been saved to the database');
 });
 
 // update/change order - change to completed or update items on order

@@ -42,7 +42,7 @@ router.post('/checkout', async (req, res) => {
          payment_method_types: ['card'],
          amount: amount,
          currency: 'usd',
-         // application_fee_amount: 0 // if there's no application fee than just have it 0
+         // application_fee_amount: 0 // if there's no application fee then remove it (having it be 0 causes an error)
       }, 
       {
          stripeAccount: process.env.TEST_CONNET_ACCOUNT_ID,
@@ -63,8 +63,8 @@ router.post('/checkout', async (req, res) => {
    });
 });
 
-// const webhookSecret = process.env.TEST_WEBHOOK_SECRET; // TEST WEBHOOK
-const webhookSecret = process.env.LIVE_WEBHOOK_SECRET; // LIVE WEBHOOK
+const webhookSecret = process.env.TEST_WEBHOOK_SECRET; // TEST WEBHOOK
+// const webhookSecret = process.env.LIVE_WEBHOOK_SECRET; // LIVE WEBHOOK
 
 const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
    // fulfill the purchase logic
@@ -76,6 +76,9 @@ const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
 // trying to send notif that a new order was made to the local server. that way restarurants can see order and details
 router.post('/onlineorders', bodyParser.raw({type: 'application/json'}), (req, res) => {
    const sig = req.headers["stripe-signature"];
+   console.log('webhook request: ', req);
+   // can grab payment_intent from raw req data to look up the contents of the order
+   // can grab receipt_email, receipt_url
    let event;
 
    try {
@@ -97,7 +100,13 @@ router.post('/onlineorders', bodyParser.raw({type: 'application/json'}), (req, r
       case 'payment_intent.payment_failed':
          break;
       case 'charge.succeeded':
-         // const chargeSuccess = event.data.object;
+         const chargeSuccess = event.data.object;
+         console.log();
+         console.log('charge.succeeded webhook: ', chargeSuccess);
+         // retrieve charge ID from stripe API and send to database
+         // can grab payment_intent from raw req data to look up the contents of the order
+         // 
+         // can grab receipt_email, receipt_url
          break;
       case 'charge.failed': 
          // console.log('charge failed');
