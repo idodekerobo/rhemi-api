@@ -35,7 +35,7 @@ var OrderSchema = new mongoose.Schema({
       required: 'customer zip code',
    },
    orderItems: {
-      type: [mongoose.Schema.Types.ObjectId], // arr of id's from menu/food items
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Item'}], // arr of id's from menu/food items
       required: 'Order cannot be blank!'
    },
    subtotal: {

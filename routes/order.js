@@ -58,6 +58,8 @@ router.post('/restaurant', (req, res) => {
 // getting all orders from database
 router.get('/order', (req, res) => {
    db.Order.find()
+   .populate('orderItems')
+   .exec()
       .then((orders) => {
          res.send(orders);
       })
