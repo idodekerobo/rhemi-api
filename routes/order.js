@@ -118,6 +118,7 @@ router.post('/order', (req, res) => {
 });
 
 // update/change order - change to completed or update items on order
+// TODO - update to work w/ restaraunt front end to edit order status
 router.put('/order/:orderid', (req, res) => {
    var orderId = {
       _id: req.params.orderid
