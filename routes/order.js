@@ -88,6 +88,7 @@ router.post('/order', (req, res) => {
 
    const priceObj = calculateOrderAmount(req.body.items);
 
+   // pickedUp and ready fields are created by default
    const order = new db.Order({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -97,7 +98,6 @@ router.post('/order', (req, res) => {
       state: req.body.customerState,
       zip: req.body.zip,
       orderItems: req.body.items, // WILL GRAB OBJECT ID'S OF SELECTED MENU ITEMS
-      
       paid: req.body.paid,
       subtotal: priceObj.subtotal, // sum the total cost of items have to look up how to make sure these get counted as currency so no issues w/ decimals
       tax: priceObj.tax, // whatever the tax rate is

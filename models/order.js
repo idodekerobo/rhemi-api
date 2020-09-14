@@ -53,11 +53,13 @@ var OrderSchema = new mongoose.Schema({
    },
    ready: {
       type: Boolean,
-      default: false
+      default: false,
+      required: 'Need to know whether the order is ready or not.'
    },
    pickedUp: {
       type: Boolean,
       default: false,
+      required: 'Need to know whether the order has been picked up or not.'
    },
    orderFinishedDate: {
       type: Date
