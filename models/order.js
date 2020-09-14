@@ -51,9 +51,13 @@ var OrderSchema = new mongoose.Schema({
       type: Number,
       required: 'Must have a total price!'
    },
-   completed: {
+   ready: {
       type: Boolean,
       default: false
+   },
+   pickedUp: {
+      type: Boolean,
+      default: false,
    },
    orderFinishedDate: {
       type: Date
