@@ -2,6 +2,7 @@
 var mongoose = require('mongoose');
 var OrderSchema = new mongoose.Schema({
    // schema automatically gets a _id w/ type ObjectID
+   // TODO - figure out how to make this the date the order is sent to the server, not the date that the window session is open
    orderPlacedDate: {
       type: Date,
       default: Date.now()
@@ -56,6 +57,10 @@ var OrderSchema = new mongoose.Schema({
    },
    orderFinishedDate: {
       type: Date
+   },
+   paid: {
+      type: Boolean,
+      required: 'Need to know whether the order is paid or not.'
    }
 });
 
