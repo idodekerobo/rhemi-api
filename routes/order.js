@@ -8,7 +8,7 @@ const db = require('../models/index');
 
 function mongoDbErrorHandling(err) {
       console.log();
-      console.log('There was an error!');
+      console.log('There was an error on the node server!');
       console.log(err);
       console.log();
       // return res.send(err);
@@ -118,21 +118,20 @@ router.post('/order', (req, res) => {
 });
 
 // update/change order - change to completed or update items on order
-// TODO - update to work w/ restaraunt front end to edit order status
 router.put('/order/:orderid', (req, res) => {
    var orderId = {
       _id: req.params.orderid
    }
 
    // MAYBE THINK ABUT NOT ALLOWING UPDATES/CHANGES IF ORDER IS ALREADY SHOWN TO BE COMPLETE
-   // 
    let updatedOrder = {
-      customer: req.body.name,
-      orderItems: req.body.items,
-      completed: req.body.completed
+      ready: req.body.ready,
+      paid: req.body.paid,
+      pickedUp: req.body.pickedUp,
+      // can use to update other order fields
    }
 
-   if (updatedOrder.completed) {
+   if (updatedOrder.pickedUp) {
       updatedOrder.orderFinishedDate = Date.now();
    }
 
@@ -140,7 +139,7 @@ router.put('/order/:orderid', (req, res) => {
       if (err) {
          mongoDbErrorHandling(err);
       }
-      console.log('The order was successfuly updated, see below for the order');
+      console.log('The order was successfuly updated on the node server, see below for the order');
       console.log(order)
       console.log('========================')
       console.log();
