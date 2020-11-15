@@ -30,6 +30,15 @@ const calculateOrderAmount = (items) => {
    return price;
 }
 
+// // firebase auth
+// const admin = require("firebase-admin");
+// // const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+// const serviceAccount = require("/Users/idodekerobo/Documents/baby mogul/Young Zuckerberg/dash-7174b-firebase-adminsdk-n0t08-2548cc1118.json");
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: "https://dash-7174b.firebaseio.com"
+// });
+
 /*
 ==============================
             RESTAURANT INFO
@@ -55,6 +64,18 @@ router.post('/restaurant', (req, res) => {
 ==============================
 */
 
+// auth middleware for seeing all orders
+let authorized = true;
+router.use('/order', (req, res, next) => {
+   if (authorized) {
+      next();
+   } else {
+      console.log('auth didn\'t go thru');
+      res.status(403).send('Unauthorized');
+      return
+   }
+});
+
 // getting all orders from database
 router.get('/order', (req, res) => {
    db.Order.find()
@@ -70,7 +91,7 @@ router.get('/order', (req, res) => {
 
 // get a specific order
 router.get('/order/:orderid', (req, res) => {
-   var orderId = req.params.orderid;
+   const orderId = req.params.orderid;
 
    db.Order.findById(orderId, (err, order) => {
       if (err) {
@@ -119,7 +140,7 @@ router.post('/order', (req, res) => {
 
 // update/change order - change to completed or update items on order
 router.put('/order/:orderid', (req, res) => {
-   var orderId = {
+   const orderId = {
       _id: req.params.orderid
    }
 
@@ -149,7 +170,7 @@ router.put('/order/:orderid', (req, res) => {
 
 // delete an order
 router.delete('/order/:orderid', (req, res) => {
-   var orderId = req.params.orderid;
+   const orderId = req.params.orderid;
 
    db.Order.findByIdAndDelete(orderId, (err, deletedOrder) => {
       if (err) {

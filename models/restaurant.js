@@ -3,7 +3,22 @@ var mongoose = require('mongoose');
 
 // Restaurant Schema will consolidate each model and represent all the data for one restauarant object
 var restaurantSchema = new mongoose.Schema({
-   // menu's
+   adminName: {
+      type: String,
+      required: "Who is running this restaurant account?"
+   },
+   adminEmail: {
+      type: String,
+      required: "What is the email of the person running this restaurant account?"
+   },
+   adminTel: {
+      type: String,
+      required: "What is the phone number of the person running this restaurant account?"
+   },
+   restaurantTel: {
+      type: String,
+      // required: "How can customers contact the restaurant?"
+   },
    menus: {
       type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Menu'}]
    },
@@ -11,7 +26,12 @@ var restaurantSchema = new mongoose.Schema({
       type: String,
       required: "What is the restaurant name"
    },
-   // address
+   customers: {
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Customer'}]
+   },
+   orders: {
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Order'}]
+   },
    streetAddress: {
       type: String
    },
@@ -24,9 +44,6 @@ var restaurantSchema = new mongoose.Schema({
    zip: {
       type: String
    }
-   // customers
-
-   // orders
 });
 
 var Restaurant = mongoose.model('Restaurant', restaurantSchema);

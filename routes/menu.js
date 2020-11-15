@@ -77,7 +77,7 @@ router.post('/menu', (req, res) => {
 
 // get a specific menu
 router.get('/menu/:menuId', (req, res) => {
-   var menuId = req.params.menuId;
+   const menuId = req.params.menuId;
    db.Menu.findById(menuId).populate('menuCategories').populate('menuItems').exec( (err, menu) => {
       if (err) {
          mongoDbErrorHandling(err);
@@ -91,7 +91,7 @@ router.get('/menu/:menuId', (req, res) => {
 // db.Category.findById(categoryId).populate('categoryItems').exec((err, category) => {
 // get all categories of a menu
 router.get('/menu/:menuId/category', (req, res) => {
-   var menuId = req.params.menuId;
+   const menuId = req.params.menuId;
    db.Menu.findById(menuId).populate('menuCategories').exec( (err, menu) => {
       if (err) {
          mongoDbErrorHandling(err);
@@ -104,8 +104,8 @@ router.get('/menu/:menuId/category', (req, res) => {
 
 // get a specific category of a menu 
 router.get('/menu/:menuId/category/:categoryId', (req, res) => {
-   var menuId = req.params.menuId;
-   var categoryId = req.params.categoryId;
+   const menuId = req.params.menuId;
+   const categoryId = req.params.categoryId;
    db.Menu.findById(menuId).populate('menuCategories').exec( (err, menu) => {
       if (err) {
          mongoDbErrorHandling(err);
@@ -124,7 +124,7 @@ router.get('/menu/:menuId/category/:categoryId', (req, res) => {
 
 // updating a menu 
 router.put('/menu/:menuId', (req, res) => {
-   var menuId = req.params.menuId;
+   const menuId = req.params.menuId;
 
    const updatedMenu = req.body;
 

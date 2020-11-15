@@ -1,3 +1,4 @@
 # IGNORE THESE FILES
 credentials.js
 .env
+serviceAccountKey.json

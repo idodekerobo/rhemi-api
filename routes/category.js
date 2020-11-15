@@ -36,7 +36,7 @@ router.get('/category', (req, res) => {
 
 // grabbing a specific category (maybe to show menu items)
 router.get('/category/:categoryid', (req, res) => {
-   var categoryId = req.params.categoryid;
+   const categoryId = req.params.categoryid;
    db.Category.findById(categoryId).populate('categoryItems').exec((err, category) => {
       if (err) {
          mongoDbErrorHandling(err);
@@ -83,7 +83,7 @@ router.post('/category', (req, res) => {
 
 // updating a category
 router.put('/category/:categoryid', (req, res) => {
-   var categoryId = req.params.categoryid;
+   const categoryId = req.params.categoryid;
 
    // just setting to req.body ensures that what isn't specified isn't overwritten as null
    let updatedCategory = req.body;

@@ -3,6 +3,11 @@ var mongoose = require('mongoose');
 var OrderSchema = new mongoose.Schema({
    // schema automatically gets a _id w/ type ObjectID
    // TODO - figure out how to make this the date the order is sent to the server, not the date that the window session is open
+   restaurantId: {
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'Restaurant',
+      required: 'Each order has to be mapped to a restaurant.'
+   },
    orderPlacedDate: {
       type: Date,
       default: Date.now()

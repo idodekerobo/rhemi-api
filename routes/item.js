@@ -34,7 +34,7 @@ router.get('/items', (req, res) => {
 
 // getting one specific item
 router.get('/items/:itemid', (req, res) => {
-   var itemId = req.params.itemid;
+   const itemId = req.params.itemid;
    db.Item.findById(itemId, (err, item) => {
       if (err) {
          mongoDbErrorHandling(err);
@@ -80,7 +80,7 @@ router.post('/items', (req, res) => {
 // updating an item
 router.put('/items/:itemid', (req, res) => {
    // client side will take you to a url that has the id of the item to be updated
-   var query = {
+   const query = {
       _id: req.params.itemid
    }
    const updatedItem = req.body; // just setting to req.body ensures that what isn't specified isn't overwritten as null
@@ -106,7 +106,7 @@ router.put('/items/:itemid', (req, res) => {
 
 // deleting an item
 router.delete('/items/:itemid', (req, res) => {
-   var id = req.params.itemid;
+   const id = req.params.itemid;
    db.Item.findByIdAndDelete(id, (err, deletedItem) => {
       if (err) {
          mongoDbErrorHandling(err);
