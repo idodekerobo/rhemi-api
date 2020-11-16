@@ -3,3 +3,4 @@ credentials.js
 .env
 serviceAccountKey.json
 /node_modules
+**/node_modules
