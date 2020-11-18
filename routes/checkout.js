@@ -45,7 +45,7 @@ router.post('/checkout', async (req, res) => {
          // application_fee_amount: 0 // if there's no application fee then remove it (having it be 0 causes an error)
       }, 
       {
-         stripeAccount: process.env.TEST_CONNET_ACCOUNT_ID,
+         stripeAccount: process.env.TEST_STRIPE_CONNECT_ACCOUNT_ID,
       })
       .then( (paymentIntent) => {
       try {
@@ -63,8 +63,8 @@ router.post('/checkout', async (req, res) => {
    });
 });
 
-const webhookSecret = process.env.TEST_WEBHOOK_SECRET; // TEST WEBHOOK
-// const webhookSecret = process.env.LIVE_WEBHOOK_SECRET; // LIVE WEBHOOK
+const webhookSecret = process.env.TEST_STRIPE_WEBHOOK_SECRET; // TEST WEBHOOK
+// const webhookSecret = process.env.LIVE_STRIPE_WEBHOOK_SECRET; // LIVE WEBHOOK
 
 const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
    // fulfill the purchase logic
