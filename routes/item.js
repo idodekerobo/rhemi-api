@@ -28,6 +28,7 @@ router.get('/items', (req, res) => {
          res.send(items);
       })
       .catch((err) => {
+         console.log(err);
          mongoDbErrorHandling(err);
       })
 });
