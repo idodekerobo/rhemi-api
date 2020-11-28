@@ -31,7 +31,7 @@ const checkoutRoutes = require('./routes/checkout.js');
 // Building Proxy Server for CORS Error requesting api from front-end
   // https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
 app.use( (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://www.ckgrill.rhemi.co/');
+  res.header('Access-Control-Allow-Origin', 'https://ckgrill.rhemi.co/');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
   next();
