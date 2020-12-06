@@ -1,8 +1,8 @@
 // RESTAURANTS SCHEMA
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 // Restaurant Schema will consolidate each model and represent all the data for one restauarant object
-var restaurantSchema = new mongoose.Schema({
+const restaurantSchema = new mongoose.Schema({
    adminName: {
       type: String,
       required: "Who is running this restaurant account?"
@@ -46,5 +46,5 @@ var restaurantSchema = new mongoose.Schema({
    }
 });
 
-var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 module.exports = Restaurant;

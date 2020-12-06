@@ -1,13 +1,27 @@
 // CUSTOMER SCHEMA
-var mongoose = require('mongoose');
-var ItemSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+const ItemSchema = new mongoose.Schema({
    name: {
       type: String,
       required: 'Item must have a name.'
    },
+   // TODO - think about how to manage prices for different sizes?? or just make two separate items?
+   // TODO - add object array for item add ons
    price: {
       type: Number,
       required: 'Item must have a price.'
+   },
+   description: {
+      type: String
+   },
+   availableAddOns: {
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
+   },
+   selectedAddOns: {
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
+   },
+   size: {
+      type: String
    },
    inStock: {
       type: Boolean,
@@ -28,5 +42,5 @@ var ItemSchema = new mongoose.Schema({
    }
 });
 
-var Item = mongoose.model('Item', ItemSchema);
+const Item = mongoose.model('Item', ItemSchema);
 module.exports = Item;

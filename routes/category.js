@@ -21,6 +21,8 @@ function mongoDbErrorHandling(err) {
 ==============================
 */
 
+// TODO -  '5fcd2dc7b24fd91faa32a979' // add basket of fries to appetizers
+
 // grabbing all categories
 router.get('/category', (req, res) => {
    db.Category.find()
@@ -61,7 +63,7 @@ router.get('/category/:categoryid', (req, res) => {
    });
 });
 
-// adding to a category, pushing an item into a cateogry arr
+// adding a category, pushing an item into a cateogry arr
 router.post('/category', (req, res) => {
 
    // categoryItems is an arr in req.body.categoryItems
@@ -98,5 +100,5 @@ router.put('/category/:categoryid', (req, res) => {
       console.log();
       return res.send('This is the category: ', updatedCategory, '. These are the items: ', updatedCategory.items);
    });
-})
+});
 module.exports = router;

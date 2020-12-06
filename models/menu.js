@@ -1,6 +1,6 @@
 // MENU SCHEMA
-var mongoose = require('mongoose');
-var MenuSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+const MenuSchema = new mongoose.Schema({
    name: {
       type: String,
       required: "Menu has to have a name, i.e, Leo's Coney Island's Menu"
@@ -14,5 +14,5 @@ var MenuSchema = new mongoose.Schema({
    menuItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Item' }]
 });
 
-var Menu = mongoose.model('Menu', MenuSchema);
+const Menu = mongoose.model('Menu', MenuSchema);
 module.exports = Menu;

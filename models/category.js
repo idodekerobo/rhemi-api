@@ -1,7 +1,7 @@
 // module.exports.Item = require('./item');
 // CATEGORIES OF FODO
-var mongoose = require('mongoose');
-var categorySchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+const categorySchema = new mongoose.Schema({
    name: {
       type: String,
       required: 'Category has to have a type i.e., Beverages or Desserts'
@@ -14,5 +14,5 @@ var categorySchema = new mongoose.Schema({
    }
 });
 
-var Category = mongoose.model('Category', categorySchema);
+const Category = mongoose.model('Category', categorySchema);
 module.exports = Category;

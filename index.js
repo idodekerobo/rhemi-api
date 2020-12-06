@@ -27,6 +27,7 @@ const menuRoutes = require('./routes/menu.js');
 const categoryRoutes = require('./routes/category.js');
 const itemRoutes = require('./routes/item.js');
 const checkoutRoutes = require('./routes/checkout.js');
+const restaurantRoutes = require('./routes/restaurant.js');
 
 // Building Proxy Server for CORS Error requesting api from front-end
   // https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
@@ -51,6 +52,7 @@ app.use('/api', menuRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', itemRoutes);
 app.use('/api', checkoutRoutes);
+app.use('/api', restaurantRoutes);
 
 app.use('/api', authRoutes);
 

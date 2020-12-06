@@ -1,6 +1,6 @@
 // CUSTOMER SCHEMA
-var mongoose = require('mongoose');
-var CustomerSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+const CustomerSchema = new mongoose.Schema({
    firstName: {
       type: String,
       trim: true,
@@ -29,5 +29,5 @@ var CustomerSchema = new mongoose.Schema({
    }
 });
 
-var Customer = mongoose.model('Customer', CustomerSchema);
+const Customer = mongoose.model('Customer', CustomerSchema);
 module.exports = Customer;

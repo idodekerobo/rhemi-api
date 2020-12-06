@@ -1,6 +1,6 @@
 // ORDER SCHEMA
-var mongoose = require('mongoose');
-var OrderSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+const OrderSchema = new mongoose.Schema({
    // schema automatically gets a _id w/ type ObjectID
    // TODO - figure out how to make this the date the order is sent to the server, not the date that the window session is open
    restaurantId: {
@@ -44,6 +44,42 @@ var OrderSchema = new mongoose.Schema({
       type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Item'}], // arr of id's from menu/food items
       required: 'Order cannot be blank!'
    },
+   orderItems: [
+      {
+         name: {
+            type: String,
+            required: 'Item must have a name.'
+         },
+         price: {
+            type: Number,
+            required: 'Item must have a price.'
+         },
+         description: {
+            type: String
+         },
+         availableAddOns: {
+            type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
+         },
+         selectedAddOns: {
+            type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
+         },
+         size: {
+            type: String
+         },
+         inStock: {
+            type: Boolean,
+            default: true
+         },
+         onSale: {
+            type: Boolean,
+            default: false
+         },
+         discount: {
+            type: Number,
+            default: 0
+         }
+      }
+   ],
    subtotal: {
       type: Number,
       required: 'Must have a subtotal price!'
@@ -75,5 +111,5 @@ var OrderSchema = new mongoose.Schema({
    }
 });
 
-var Order = mongoose.model('Order', OrderSchema);
+const Order = mongoose.model('Order', OrderSchema);
 module.exports = Order;
