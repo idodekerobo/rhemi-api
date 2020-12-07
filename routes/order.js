@@ -41,25 +41,6 @@ const calculateOrderAmount = (items) => {
 
 /*
 ==============================
-            RESTAURANT INFO
-==============================
-*/
-router.get('/', (req, res) => {
-   db.Restaurant.find()
-   .then( (restaurant) => {
-      res.send(restaurant);
-   })
-   .catch((err) => {
-      mongoDbErrorHandling(err);
-   })
-})
-
-router.post('/restaurant', (req, res) => {
-
-});
-
-/*
-==============================
             ORDER
 ==============================
 */

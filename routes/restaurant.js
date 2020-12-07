@@ -22,6 +22,12 @@ function mongoDbErrorHandling(err) {
 =================================
 */
 
+/*
+==============================
+            RESTAURANT INFO
+==============================
+*/
+
 // getting all restaurants
 router.get('/restaurant', (req, res) => {
    db.Restaurant.find()

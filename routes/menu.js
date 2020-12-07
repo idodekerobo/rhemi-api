@@ -141,5 +141,63 @@ router.put('/menu/:menuId', (req, res) => {
          return res.send('Successfully updated.');
       }
    );
-})
+});
+
+// post ck menu
+/*
+router.post('/newCkMenu', (req, res) => {
+
+   let categoryArr = [];
+   async function getCategories() {
+      let categories = await db.Category.find()
+         .then((categories) => {
+            categoryArr = categories;
+            return categories;
+         })
+         .catch((err) => {
+            mongoDbErrorHandling(err);
+      });
+   }
+   
+   let itemArr = [];
+   async function getItems() {
+      let items = await db.Item.find()
+         .then((items) => {
+            itemArr = items;
+            return items;
+         })
+         .catch((err) => {
+            mongoDbErrorHandling(err);
+      });
+   }
+
+   function sendToDb() {
+      const newMenu = new db.Menu({
+         name: "CK's Menu",
+         menuItems: itemArr,
+         menuCategories: categoryArr,
+         restaurantId: '5fcd290f26d1f71f24a1ce4c',
+      });
+   
+      // console.log(newMenu);   
+      newMenu.save()
+      .then(result => {
+         console.log('it worked');
+         res.send(result);
+      })
+      .catch(err => {
+         console.log(err);
+         res.send(err);
+      });
+   }
+   function err(err) {
+      console.log(err);
+   }
+
+   // getCategories()
+   // .then(getItems, err(err))
+   // .then(sendToDb, err(err));
+});
+*/
+
 module.exports = router;
