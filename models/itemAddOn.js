@@ -6,6 +6,14 @@ const ItemAddOnSchema = new mongoose.Schema({
    },
    price: {
       type: Number,
+      required: 'Price is required, if free put 0.00.',
+   },
+   addOnType: {
+      type: String,
+   },
+   required: {
+      type: Boolean,
+      default: false,
    },
    inStock: {
       type: Boolean,

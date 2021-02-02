@@ -28,13 +28,21 @@ router.get('/menu', (req, res) => {
       path: 'menuCategories',
       populate: {
          path: 'categoryItems',
+         // populating the dbl nested object id array: the addOns of the category items
+         populate: {
+            path: 'availableAddOns',
+            model: 'ItemAddOn'
+         },
          model: 'Item'
       }
    })
+   // TODO - do i need to have both menuCategories, which references category which contains items, AND menuItems which directly references items????
+   // above i'm already populating the items of ea/ category
    .populate('menuItems')
    .exec()
    .then((menu) => {
       res.send(menu);
+      // res.json(menu);
    })
    .catch((err) => {
       res.send(err);

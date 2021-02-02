@@ -5,6 +5,7 @@ mongoose.set('debug', true); // allows us to see whats being sent to db
 
 // const testDb =  process.env.MONGO_DB_TEST_CONN;
 const prodDb = process.env.MONGO_DB_PROD_CONN;
+// mongoose.connect(testDb, {
 mongoose.connect(prodDb, {
     useNewUrlParser: true,
     useUnifiedTopology: true

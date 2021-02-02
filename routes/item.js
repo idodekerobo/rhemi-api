@@ -24,26 +24,27 @@ function mongoDbErrorHandling(err) {
 // getting all menu items
 router.get('/items', (req, res) => {
    db.Item.find()
-      .then((items) => {
-         res.send(items);
-      })
-      .catch((err) => {
-         mongoDbErrorHandling(err);
-      })
+   // popoulating availableAddOns from the _id reference 
+   .populate('availableAddOns')
+   .exec()
+   .then((items) => {
+      res.send(items);
+   })
+   .catch((err) => {
+      mongoDbErrorHandling(err);
+   })
 });
 
 // getting one specific item
 router.get('/items/:itemid', (req, res) => {
    const itemId = req.params.itemid;
-   db.Item.findById(itemId, (err, item) => {
-      if (err) {
-         mongoDbErrorHandling(err);
-      }
-      console.log('Here\'s your item');
-      console.log(item);
-      console.log();
-      return res.send(item);
-   });
+   db.Item.findById(itemId)
+   .populate('availableAddOns')
+   .exec()
+   .then(item => {
+      res.send(item);
+   })
+   .catch(err => mongoDbErrorHandling(err));
 });
 
 // posting a new item
@@ -59,19 +60,19 @@ router.post('/items', (req, res) => {
 
    newItem.save()
       .then(result => {
-         console.log('successfuly saved the below item to the database');
-         console.log('================================================');
-         console.log(result);
-         console.log('================================================');
-         console.log();
+         // console.log('successfuly saved the below item to the database');
+         // console.log('================================================');
+         // console.log(result);
+         // console.log('================================================');
+         // console.log();
          res.send(result);
       })
       .catch(err => {
-         console.log('There was an error saving the item to the database');
-         console.log('================================================');
-         console.log(err);
-         console.log('================================================');
-         console.log();
+         // console.log('There was an error saving the item to the database');
+         // console.log('================================================');
+         // console.log(err);
+         // console.log('================================================');
+         // console.log();
          res.send(err);
       });
 

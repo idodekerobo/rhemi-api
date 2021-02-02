@@ -11,6 +11,7 @@ const MenuSchema = new mongoose.Schema({
       required: 'Each menu has to be mapped to a restaurant.'
    },
    menuCategories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
+   // TODO - do i need to have both menuCategories, which references category which contains items, AND menuItems which directly references items????
    menuItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Item' }]
 });
 

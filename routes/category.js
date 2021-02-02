@@ -26,7 +26,7 @@ function mongoDbErrorHandling(err) {
 // grabbing all categories
 router.get('/category', (req, res) => {
    db.Category.find()
-      .populate('items')
+      // .populate('categoryItems') do i need to populate categoryItems? don't think so
       .exec()
       .then((categories) => {
          res.send(categories);

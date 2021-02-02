@@ -26,13 +26,16 @@ const orderRoutes = require('./routes/order.js');
 const menuRoutes = require('./routes/menu.js');
 const categoryRoutes = require('./routes/category.js');
 const itemRoutes = require('./routes/item.js');
+const itemAddOnRoutes = require('./routes/itemAddOn.js');
 const checkoutRoutes = require('./routes/checkout.js');
 const restaurantRoutes = require('./routes/restaurant.js');
 
 // Building Proxy Server for CORS Error requesting api from front-end
   // https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
 app.use( (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', process.env.CORS_DOMAIN);
+//   res.header('Access-Control-Allow-Origin', process.env.CORS_DOMAIN);
+   // TODO - fix before pushing to production
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
   next();
@@ -51,6 +54,7 @@ app.use('/api', orderRoutes);
 app.use('/api', menuRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', itemRoutes);
+app.use('/api', itemAddOnRoutes);
 app.use('/api', checkoutRoutes);
 app.use('/api', restaurantRoutes);
 
