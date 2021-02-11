@@ -1,26 +1,40 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-const admin = require('../services/firebase');
-
-// const config = require('../services/firebase');
-// const admin = require('firebase-admin');
-// admin.initializeApp(config);
-
-// Require database in router
-const db = require('../models/index');
+const admin = require("firebase-admin");
 
 // EVERY URL STARTS WITH /API/
 
-function mongoDbErrorHandling(err) {
-   console.log();
-   console.log('There was an error on the node server!');
-   console.log(err);
-   console.log();
-   // return res.send(err);
-   return res.send(500, { error: err });
-}
+admin.initializeApp({
+   credential: admin.credential.cert({
+      "type": process.env.FIREBASE_ACCT,
+      "project_id": process.env.FIREBASE_ACCT_PROJ_ID,
+      "private_key_id": process.env.FIREBASE_ACCT_PRIV_KEY_ID,
+      "private_key": process.env.FIREBASE_ACCT_PRIV_KEY.replace(/\\n/g, '\n'),
+      "client_email": process.env.FIREBASE_ACCT_CLIENT_EMAIL,
+      "client_id": process.env.FIREBASE_ACCT_CLIENT_ID,
+      "auth_uri": process.env.FIREBASE_ACCT_AUTH_URI,
+      "token_uri": process.env.FIREBASE_ACCT_TOKEN_URI,
+      "auth_provider_x509_cert_url": process.env.FIREBASE_ACCT_AUTH_PROVIDER,
+      "client_x509_cert_url": process.env.FIREBASE_ACCT_CLIENT_X509_CERT
+   }),
+   databaseURL: "https://dash-7174b.firebaseio.com"
+});
 
-// get auth token middleware
+// Require database in router
+// const db = require('../models/index');
+
+
+// function mongoDbErrorHandling(err) {
+//    console.log();
+//    console.log('There was an error on the node server!');
+//    console.log(err);
+//    console.log();
+//    // return res.send(err);
+//    return res.send(500, { error: err });
+// }
+
+// MIDDLEWARE TO GET THE AUTH TOKEN FROM THE HEADER
 const getAuthToken = (req, res, next) => {
    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
       req.authToken = req.headers.authorization.split(' ')[1];
@@ -29,54 +43,48 @@ const getAuthToken = (req, res, next) => {
    }
    next();
 }
+
+// MIDDLEWARE TO VERIFY AUTH TOKEN W/ FIREBASE, USES getAuthToken() MIDDLEWARE
 const checkIfAuthorized = (req, res, next) => {
    getAuthToken(req, res, async () => {
       try {
          const { authToken } = req;
          admin.auth().verifyIdToken(authToken)
          .then((decodedToken) => {
-            console.log(`id token correct decoded ${decodedToken}`)
             req.user = decodedToken;
             next();
             return;
          })
-         // .catch(err => {
-         //    console.log(err);
-         // })
+         .catch(e => {
+            console.log(`there was an error verifying token w/ firebase`)
+            console.log(e);
+            const authObject = {
+               authStatus: 'not authorized'
+            }
+            return res.status(401).send(authObject);   
+         })
       } catch (e) {
          console.log(`error.code ${e.code}`)
          console.log(`error msg ${e.message}`);
          console.log(`full error ${e}`)
-         return res.status(401).send({error: 'You are not authorized to make this request'});
+         const authObject = {
+            authStatus: 'not authorized'
+         }
+         return res.status(401).send(authObject);
       }
    });
 };
 
-// router.use('/login', checkAuth);
-
-// router.post('/auth', (req, res) => {
 router.get('/auth', checkIfAuthorized, (req, res) => {
-   console.log();
-   console.log(`========================================================`)
-   console.log(`this is the request: ${req}`)
-
-   console.log();
-   console.log(`========================================================`)
-   console.log(`this is the response: ${res}`);
-
-   console.log();
-   console.log(`========================================================`)
-   console.log(`user is authenticated - this is the response`)
-
-   res.send(`user is authenticated - this is the response`);
+   // console.log(`========================================================`)
+   // console.log(`authorized`)
+   const authObject = {
+      authStatus: 'authorized'
+   }
+   res.json(authObject);
 })
 
 module.exports = router;
-
-
-
-
-
 
 
 // create tenant restaurant 

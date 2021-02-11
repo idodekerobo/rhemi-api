@@ -40,46 +40,7 @@ const OrderSchema = new mongoose.Schema({
       type: String,
       required: 'customer zip code',
    },
-   orderItems: {
-      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Item'}], // arr of id's from menu/food items
-      required: 'Order cannot be blank!'
-   },
-   orderItems: [
-      {
-         name: {
-            type: String,
-            required: 'Item must have a name.'
-         },
-         price: {
-            type: Number,
-            required: 'Item must have a price.'
-         },
-         description: {
-            type: String
-         },
-         availableAddOns: {
-            type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
-         },
-         selectedAddOns: {
-            type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
-         },
-         size: {
-            type: String
-         },
-         inStock: {
-            type: Boolean,
-            default: true
-         },
-         onSale: {
-            type: Boolean,
-            default: false
-         },
-         discount: {
-            type: Number,
-            default: 0
-         }
-      }
-   ],
+   orderItems: [ ], // do i have to put more constraints around here on the database side?? no reference id so its not tied to the current items in database
    subtotal: {
       type: Number,
       required: 'Must have a subtotal price!'

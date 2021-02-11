@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const functions = require('../services/functions');
 
 // Require database in router
 const db = require('../models/index');
@@ -11,23 +12,7 @@ function mongoDbErrorHandling(err) {
       console.log('There was an error on the node server!');
       console.log(err);
       console.log();
-      // return res.send(err);
       return res.send(500, { error: err });
-}
-const TAX_RATE = 0.1;
-const calculateOrderAmount = (items) => {
-   const subtotal = items.slice().reduce((acc, obj) => (acc += obj.price), 0).toFixed(2);
-   const tax = (subtotal * TAX_RATE).toFixed(2);
-   const total = (parseFloat(subtotal) + parseFloat(tax)).toFixed(2);
-
-   const price = {
-      subtotal,
-      tax,
-      total
-   }
-   // return (subtotal*100);
-   // return ((total*100).toFixed(0)); // returning the total w/ sales tax. fixing to 0 because we only need the two decimal points
-   return price;
 }
 
 // // firebase auth
@@ -45,22 +30,9 @@ const calculateOrderAmount = (items) => {
 ==============================
 */
 
-// auth middleware for seeing all orders
-let authorized = true;
-router.use('/order', (req, res, next) => {
-   if (authorized) {
-      next();
-   } else {
-      console.log('auth didn\'t go thru');
-      res.status(403).send('Unauthorized');
-      return
-   }
-});
-
 // getting all orders from database
 router.get('/order', (req, res) => {
    db.Order.find()
-   .populate('orderItems')
    .exec()
       .then((orders) => {
          res.send(orders);
@@ -87,10 +59,14 @@ router.get('/order/:orderid', (req, res) => {
 
 // sending order to database
 router.post('/order', (req, res) => {
+   const priceObj = functions.calculateOrderAmount(req.body.items);
 
-   const priceObj = calculateOrderAmount(req.body.items);
+   // TODO - need to map EACH ORDER TO A RESTAURANT
+   let restaurantId;
+   if (req.body.items[0]) restaurantId = req.body.items[0].restaurantId;
 
    // pickedUp and ready fields are created by default
+   // TODO - order doesn't have config object in it??? but it is in the cart that is being sent on the fetch
    const order = new db.Order({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -100,6 +76,7 @@ router.post('/order', (req, res) => {
       state: req.body.customerState,
       zip: req.body.zip,
       orderItems: req.body.items, // WILL GRAB OBJECT ID'S OF SELECTED MENU ITEMS
+      restaurantId: restaurantId, // TODO - find a better way to do this
       paid: req.body.paid,
       subtotal: priceObj.subtotal, // sum the total cost of items have to look up how to make sure these get counted as currency so no issues w/ decimals
       tax: priceObj.tax, // whatever the tax rate is
