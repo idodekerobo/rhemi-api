@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const functions = require('../services/functions');
+const { default: Expo } = require('expo-server-sdk');
+const expo = new Expo();
 
 // Require database in router
 const db = require('../models/index');
@@ -23,6 +25,7 @@ function mongoDbErrorHandling(err) {
 //   credential: admin.credential.cert(serviceAccount),
 //   databaseURL: "https://dash-7174b.firebaseio.com"
 // });
+
 
 /*
 ==============================
@@ -87,11 +90,62 @@ router.post('/order', (req, res) => {
       .save()
       .then(result => {
          console.log('Latest order saved to database');
-         console.log(result);
+         // console.log(result);
       })
       .catch(err => {
          mongoDbErrorHandling(err);
-      });
+   });
+
+   // grab token from restaurant object
+   // let restaurantPushTokens, restaurantName;
+   // db.Restaurant.findById(restaurantId, 'pushTokens')
+   db.Restaurant.findById(restaurantId)
+   .exec()
+   .then(restaurantObj => {
+      // restaurantPushTokens = tokenArr;
+      const tokenArr = restaurantObj.pushNotifTokens;
+
+      // only run this if any token arrs are present
+      if (tokenArr.length > 0) {
+         // https://github.com/expo/expo-server-sdk-node
+         let messages = [ ];
+         // execute for each token in the tokenArr returned
+         for (token of tokenArr) {
+            let newMsg = {
+               to: token,
+               sound: 'default',
+               title: `A new order came in from ${req.body.firstName}!`,
+               subtitle: 'Go to the Rhemi app to see!',
+               // data: { }
+            }
+            messages.push(newMsg);
+         }
+         
+         // SEND PUSH NOTIF THAT AN ORDER CAME IN
+         let chunks = expo.chunkPushNotifications(messages);
+         let tickets = [ ];
+         (async () => {
+            // send chunks to the expo push notif service
+            for (let chunk of chunks) {
+               try {
+                  let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+                  console.log(`this is the ticket chunk ${ticketChunk}`)
+                  tickets.push(...ticketChunk);
+               } catch (e) {
+                  // TODO - need to handle errors appropriately
+                  // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
+                  console.log(`error from ticket chunking ${e}`);
+               }
+            }
+         })();
+      }
+   })
+   // .catch(err => mongoDbErrorHandling(err))
+   .catch(err => {
+      console.log(`there was an error getting the restauarant push tokens ${err}`);
+   })
+
+
    // res.redirect( [redirect page]);
    res.send('client side response: order has been saved to the database');
 });

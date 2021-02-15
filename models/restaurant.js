@@ -32,6 +32,15 @@ const restaurantSchema = new mongoose.Schema({
    orders: {
       type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Order'}]
    },
+   pushNotifTokens: {
+      type: [String]
+   },
+   // pushNotifTokens: [
+   //    {
+   //       name: String,
+   //       token: String,
+   //    }
+   // ],
    streetAddress: {
       type: String
    },

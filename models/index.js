@@ -19,4 +19,5 @@ module.exports.ItemAddOn = require('./itemAddOn');
 module.exports.Menu = require('./menu');
 module.exports.Order = require('./order');
 module.exports.Category = require('./category');
+module.exports.User = require('./user');
 module.exports.Restaurant = require('./restaurant');

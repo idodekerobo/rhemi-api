@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const admin = require("firebase-admin");
+const { default: Expo } = require('expo-server-sdk');
+const expo = new Expo();
 
 // EVERY URL STARTS WITH /API/
 
@@ -22,7 +24,7 @@ admin.initializeApp({
 });
 
 // Require database in router
-// const db = require('../models/index');
+const db = require('../models/index');
 
 
 // function mongoDbErrorHandling(err) {
@@ -75,6 +77,61 @@ const checkIfAuthorized = (req, res, next) => {
    });
 };
 
+/*
+============================================================
+                        EXPO PUSH TOKENS
+============================================================
+*/
+
+const handlePushTokens = ({title, body}) => {
+   let notifications = [ ];
+   for (let pushToken of savedPushTokens) {
+      if (!Expo.isExpoPushToken(pushToken)) {
+         console.error(`Push token ${pushToken} is not a valid Expo push token`);
+         continue;
+      }
+
+      notifications.push({
+         to: pushToken,
+         sound: 'default',
+         title,
+         body,
+         data: { body }
+      });
+   }
+
+   let chunks = expo.chunkPushNotifications(notifications);
+
+   (async () => {
+      for (let chunk of chunks) {
+         try {
+            let receipts = await expo.sendPushNotificationsAsync(chunk);
+            console.log(`these are the receipts ${receipts}`);
+         } catch (error) {
+            console.error(error);
+         }
+      }
+   })();
+};
+
+let savedPushTokens = [ ];
+const saveToken = token => {
+   // console.log(`here is the token ${token} and here is the saved push tokens ${savedPushTokens}`);
+   const exists = savedPushTokens.find(t => t === token);
+   if (!exists) {
+      savedPushTokens.push(token); // if it doesn't alrady exist, save push token to an array
+      // TODO - need to find somewhere to keep push tokens???? it's not saving them currently
+   } else {
+      console.log(`push token already exists`);
+   }
+};
+
+/*
+============================================================
+                        CHECK AUTH ROUTES
+============================================================
+*/
+
 router.get('/auth', checkIfAuthorized, (req, res) => {
    // console.log(`========================================================`)
    // console.log(`authorized`)
@@ -83,6 +140,136 @@ router.get('/auth', checkIfAuthorized, (req, res) => {
    }
    res.json(authObject);
 })
+
+/*
+============================================================
+                        SIGN IN/SIGN OUT
+============================================================
+*/
+
+// getting push notif token from device
+router.post('/saveToken', (req, res) => {
+   
+   // 1) when signining in is complete on client, send the uid to the server 
+   // when user signs in, find their user object using uuid from firebase (????????)
+   // console.log(`this is the body object ${JSON.stringify(req.body)}`)
+   const uuid = req.body.uuid;
+   const deviceTokenObject = req.body.clientToken.value; // this is the expo push token syntax: {type: 'expo', data: 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]'}
+   const deviceToken = deviceTokenObject.data; 
+   
+
+   // 2) take that uid and find mongodb user that ties to that on firebaseUid property
+   // const signedInUser = await db.User.findOne({ 'firebaseUid': uuid } )
+   db.User.findOne({ 'firebaseUid': uuid })
+   .then(user => {
+      // console.log(`the user object returned from querying on uuid sent to server ${user}`);
+      // 3) based on that user object return the restaurant _id they're associated with
+      let restaurantId = user.restaurant
+
+      // 4) check to see if this device token is present in that restaurant's pushNotifTokens field
+      db.Restaurant.findOne({ '_id': restaurantId })
+      .then(restaurant => {
+         // console.log(`the restaurant object returned from querying on _id inside user object ${restaurant}`);
+         let restaurantDevices = [...restaurant.pushNotifTokens];
+         
+         // 4a) if it doesn't include the deviceToken add that token to that array
+         if (!restaurantDevices.includes(deviceToken)) {
+            // console.log(`restaurant device arr: (${restaurantDevices}) doesn't have the signed in device push token: ${deviceToken}`);
+            restaurantDevices.push(deviceToken)
+            db.Restaurant.findOneAndUpdate({ '_id': restaurantId }, {$set: {pushNotifTokens: restaurantDevices} }, {new: true})
+            .then(newRestaurantObj => {
+               // console.log(`this is the new restaurantObject w/ the updated device token array ${newRestaurantObj}`);
+            })
+            .catch(err => {
+               console.log(`There was an error updating the restaurant object w/ the new device token array ${err}`);
+            });      
+         } else {
+            console.log(`The restaurant devices array includes the deviceToken:  ${restaurantDevices}`);
+         }
+
+      })
+      .catch(err => {
+         console.log(`There was an error trying to find the restaurant based on the user's listed restaurant _id string ${err}`);
+      });
+   })
+   .catch(err => {
+      console.log(`There was an error looking for this user on the database: ${err}`);
+   })
+
+   // TODO - determine if this saveToken function is needed.....
+   saveToken(req.body.clientToken.value); 
+
+   // TODO - think about whether i should conditionally send shit back to the server
+   // send back restaurant id to be saved in async storage/context
+   res.send(`Received push token on the server`);
+});
+
+/*
+router.get('/createDemoUser', (req, res) => {
+   const newUser = new db.User({
+      firebaseUid: '3yAvQZ1vRNQ1xTTIG7bbKivb03G3', // firebase user uid
+      restaurant: '5f93275a7327f625dbd0d000', // mongo object _id ref
+      firstName: 'Idode',
+      lastName: 'Kerobo',
+   })
+
+   newUser.save()
+   .then(result => {
+      console.log();
+      console.log(`saved this new user to the database user schema ${result}`);
+      res.send(result)
+      console.log();
+   })
+   .catch(err => {
+      console.log();
+      console.log(`There was an error saving user to the database ${err}`);
+      res.send(err);
+      console.log();
+   })
+})
+*/
+
+router.post('/signout', async (req, res) => {
+   // remove push notif token from the database
+   const restaurantId = req.body.clientToken.restaurantId;
+   const deviceTokenObject = req.body.clientToken.value;
+   const deviceToken = deviceTokenObject.data;
+   let currentTokenArr;
+   let newTokenArr;
+   let index; 
+   console.log('==================================================');
+   console.log();
+   console.log(JSON.stringify(deviceToken));
+   
+   try {
+      let restaurantObj = await db.Restaurant.findById(restaurantId);
+      console.log(`returned restaurantObj: ${restaurantObj}`);
+      currentTokenArr = restaurantObj.pushNotifTokens;
+      newTokenArr = [...currentTokenArr];
+      index = newTokenArr.indexOf(deviceToken);
+      
+      // may need to work in functionality of some type of do...while loop if there are multiple copies of the same token
+      if (index > -1) {
+         newTokenArr.splice(index, 1)
+         console.log();
+         console.log(`removed device token from the array here is newTokenArr ${newTokenArr}`);
+         console.log(`this is the restaurantObj.pushNotifTokens ${restaurantObj.pushNotifTokens}`);
+      } else {
+         console.log(`this token is not present in the restaurant object ${deviceToken}`);
+      }
+
+      try {
+         const query = {_id: restaurantId};
+         let newRestaurantObj = await db.Restaurant.findOneAndUpdate(query, {$set: {pushNotifTokens: newTokenArr}}, {new: true});
+         console.log(`This is the new restaurant object w/ the device token: ${deviceToken} removed: ${newRestaurantObj}`);
+      } catch (e) {
+         console.log(`There was an error sending the new array back to the database ${e}`)
+      }
+
+   } catch (e) {
+      console.log(`There was an error grabbing the restaurant object from the database ${e}`)
+   }
+});
 
 module.exports = router;
 
