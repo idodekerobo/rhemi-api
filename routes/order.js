@@ -17,15 +17,46 @@ function mongoDbErrorHandling(err) {
       return res.send(500, { error: err });
 }
 
-// // firebase auth
-// const admin = require("firebase-admin");
-// // const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-// const serviceAccount = require("/Users/idodekerobo/Documents/baby mogul/Young Zuckerberg/dash-7174b-firebase-adminsdk-n0t08-2548cc1118.json");
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   databaseURL: "https://dash-7174b.firebaseio.com"
-// });
+// MIDDLEWARE TO GET THE AUTH TOKEN FROM THE HEADER
+const getAuthToken = (req, res, next) => {
+   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+      req.authToken = req.headers.authorization.split(' ')[1];
+   } else {
+      req.authToken = null;
+   }
+   next();
+}
 
+// MIDDLEWARE TO VERIFY AUTH TOKEN W/ FIREBASE, USES getAuthToken() MIDDLEWARE
+const checkIfAuthorized = (req, res, next) => {
+   getAuthToken(req, res, async () => {
+      try {
+         const { authToken } = req;
+         admin.auth().verifyIdToken(authToken)
+         .then((decodedToken) => {
+            req.user = decodedToken;
+            next();
+            return;
+         })
+         .catch(e => {
+            console.log(`there was an error verifying token w/ firebase`)
+            console.log(e);
+            const authObject = {
+               authStatus: 'not authorized'
+            }
+            return res.status(401).send(authObject);   
+         })
+      } catch (e) {
+         console.log(`error.code ${e.code}`)
+         console.log(`error msg ${e.message}`);
+         console.log(`full error ${e}`)
+         const authObject = {
+            authStatus: 'not authorized'
+         }
+         return res.status(401).send(authObject);
+      }
+   });
+};
 
 /*
 ==============================
@@ -35,6 +66,7 @@ function mongoDbErrorHandling(err) {
 
 // getting all orders from database
 router.get('/order', (req, res) => {
+// router.get('/order', checkIfAuthorized, (req, res) => {
    db.Order.find()
    .exec()
       .then((orders) => {

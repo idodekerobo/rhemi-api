@@ -204,31 +204,6 @@ router.post('/saveToken', (req, res) => {
    res.send(`Received push token on the server`);
 });
 
-/*
-router.get('/createDemoUser', (req, res) => {
-   const newUser = new db.User({
-      firebaseUid: '3yAvQZ1vRNQ1xTTIG7bbKivb03G3', // firebase user uid
-      restaurant: '5f93275a7327f625dbd0d000', // mongo object _id ref
-      firstName: 'Idode',
-      lastName: 'Kerobo',
-   })
-
-   newUser.save()
-   .then(result => {
-      console.log();
-      console.log(`saved this new user to the database user schema ${result}`);
-      res.send(result)
-      console.log();
-   })
-   .catch(err => {
-      console.log();
-      console.log(`There was an error saving user to the database ${err}`);
-      res.send(err);
-      console.log();
-   })
-})
-*/
-
 router.post('/signout', async (req, res) => {
    // remove push notif token from the database
    const restaurantId = req.body.clientToken.restaurantId;
