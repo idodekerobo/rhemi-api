@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
@@ -30,6 +31,7 @@ const itemAddOnRoutes = require('./routes/itemAddOn.js');
 const checkoutRoutes = require('./routes/checkout.js');
 const restaurantRoutes = require('./routes/restaurant.js');
 const editRoutes = require('./routes/edit.js');
+const customerSignUpRoutes = require('./routes/customer-sign-up.js');
 
 // Building Proxy Server for CORS Error requesting api from front-end
   // https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
@@ -59,14 +61,35 @@ app.use('/api', checkoutRoutes);
 app.use('/api', restaurantRoutes);
 app.use('/api', editRoutes);
 app.use('/api', authRoutes); // if i put this first it'll call auth before the routes that come after it????
+app.use('/api', customerSignUpRoutes);
 
-app.get('/', (req, res) => {
-  res.send('now we cookin');
-});
+// do i remove this now that squarespace is working?
+// app.get('/', (req, res) => {
+//    res.send('now we cookin');
+// });
 
-app.get('/signup', (req, res) => {
-   res.send('stripe connected account sign up page')
-});
+// =====================================================
+// STATIC ROUTES
+// =====================================================
+
+// INIT EJS
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'ejs');
+
+// SERVING STATIC FILES
+// app.use('/public',express.static(path.join(__dirname,'/public')));
+
+
+// app.get('/signup', (req, res) => {
+//    res.render('signup');
+//    // res.send('stripe connected account sign up page')
+// });
+// app.get('/signup-stripe', (req, res) => {
+//    res.render('signup-stripe');
+// })
+// app.post('/customerSignUp', (req, res) => {
+//    res.send('this is supposed to send to stripe some type of data that a customer signed up');
+// });
 
 // making server listen
 app.listen(PORT, () => {

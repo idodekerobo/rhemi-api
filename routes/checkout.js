@@ -37,6 +37,7 @@ router.post('/checkout', async (req, res) => {
          // application_fee_amount: 0 // if there's no application fee then remove it (having it be 0 causes an error)
       }, 
       {
+         // TODO - MAKE SURE YOU SEND THE CORRECT TEST ACCT ID - needs to be sent in req.headers or sum shit
          stripeAccount: process.env.TEST_STRIPE_CONNECT_ACCOUNT_ID,
       })
       .then( (paymentIntent) => {
