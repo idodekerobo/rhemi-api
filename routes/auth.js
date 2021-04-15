@@ -143,9 +143,37 @@ router.get('/auth', checkIfAuthorized, (req, res) => {
 
 /*
 ============================================================
-                        SIGN IN/SIGN OUT
+                  SIGN IN/SIGN OUT/SAVE TOKEN
 ============================================================
 */
+
+router.post('/signin', async (req, res) => {
+   const idToken = req.body.idToken;
+   admin.auth()
+   .verifyIdToken(idToken)
+   .then(decodedToken => {
+      const uuid = decodedToken.uid;
+      return uuid;
+   })
+   .then(uuid => {
+      // take this uuid and find user object assoc w/ it. return restaurantId from there
+      db.User.findOne({ 'firebaseUid': uuid })
+      .then(user => {
+         const restaurantId = user.restaurant;
+         console.log(`this is the restaurant id ${restaurantId}`);
+         const id = {
+            restaurantId
+         }
+         res.send(id)
+      })
+   })
+   .catch(err => {
+      console.log(`Error getting user object using firebase uuid ${err}`);
+   })
+   .catch(err => {
+      console.log(`Error verifying id token w/ firebase ${err}`);
+   })
+})
 
 // getting push notif token from device
 router.post('/saveToken', (req, res) => {

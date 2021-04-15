@@ -53,6 +53,7 @@ router.post('/items', (req, res) => {
    const newItem = new db.Item({
       name: req.body.name,
       price: req.body.price,
+      restaurantId: req.body.restaurantId,
       // inStock: null, // defaults to true
       // onSale: null, // defaults to false
       // discount: 0, // defaults to zero

@@ -20,7 +20,7 @@ const restaurantSchema = new mongoose.Schema({
       // required: "How can customers contact the restaurant?"
    },
    menus: {
-      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Menu'}]
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Menu'}] // array of menu, consider changing to just one menu until i fully support multiple menus???
    },
    name: {
       type: String,

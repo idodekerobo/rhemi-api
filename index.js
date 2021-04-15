@@ -29,6 +29,7 @@ const itemRoutes = require('./routes/item.js');
 const itemAddOnRoutes = require('./routes/itemAddOn.js');
 const checkoutRoutes = require('./routes/checkout.js');
 const restaurantRoutes = require('./routes/restaurant.js');
+const editRoutes = require('./routes/edit.js');
 
 // Building Proxy Server for CORS Error requesting api from front-end
   // https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
@@ -56,11 +57,15 @@ app.use('/api', itemRoutes);
 app.use('/api', itemAddOnRoutes);
 app.use('/api', checkoutRoutes);
 app.use('/api', restaurantRoutes);
-
-app.use('/api', authRoutes);
+app.use('/api', editRoutes);
+app.use('/api', authRoutes); // if i put this first it'll call auth before the routes that come after it????
 
 app.get('/', (req, res) => {
   res.send('now we cookin');
+});
+
+app.get('/signup', (req, res) => {
+   res.send('stripe connected account sign up page')
 });
 
 // making server listen
