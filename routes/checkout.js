@@ -19,7 +19,6 @@ const db = require('../models/index');
 const bodyParser = require('body-parser');
 const { response } = require('express');
 
-// const TAX_RATE = 0.1; 
 const TAX_RATE = parseFloat(process.env.AZ_TAX_RATE);
 
 function errorHandling(err) {

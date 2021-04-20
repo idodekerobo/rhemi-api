@@ -1,4 +1,4 @@
-const TAX_RATE = 0.1;
+const TAX_RATE = parseFloat(process.env.AZ_TAX_RATE);
 
 // function that returns price including the items add-ons or sides
 const calcPriceWithAddOns = (item) => {
