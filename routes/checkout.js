@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 // const stripe = require("stripe")(process.env.STRIPE_TEST_KEY); // test key
-const stripe = require("stripe")(process.env.STRIPE_LIVE_KEY); // live key
-
 // const webhookSecret = process.env.TEST_STRIPE_WEBHOOK_SECRET; // TEST WEBHOOK
+// const stripe_publishable_key = process.env.STRIPE_TEST_PUBLISHABLE_KEY // test key
+
+const stripe_publishable_key = process.env.STRIPE_LIVE_PUBLISHABLE_KEY // live keys
+const stripe = require("stripe")(process.env.STRIPE_LIVE_KEY); // live key
 const webhookSecret = process.env.LIVE_STRIPE_WEBHOOK_SECRET; // LIVE WEBHOOK
+
 
 // TODO - need to pass in via route req.headers
 const CONNECT_ACCOUNT_ID = process.env.TEST_STRIPE_CONNECT_ACCOUNT_ID
@@ -53,7 +56,7 @@ router.post('/checkout', async (req, res) => {
       .then( (paymentIntent) => {
       try {
          return res.send({
-            publishableKey: process.env.STRIPE_TEST_PUBLISHABLE_KEY,
+            publishableKey: stripe_publishable_key,
             clientSecret: paymentIntent.client_secret,
          });
       } catch (err) {
