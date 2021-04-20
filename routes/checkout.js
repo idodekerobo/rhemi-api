@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const stripe = require("stripe")(process.env.STRIPE_TEST_KEY)
+// const stripe = require("stripe")(process.env.STRIPE_TEST_KEY); // test key
+const stripe = require("stripe")(process.env.STRIPE_LIVE_KEY); // live key
+
+// const webhookSecret = process.env.TEST_STRIPE_WEBHOOK_SECRET; // TEST WEBHOOK
+const webhookSecret = process.env.LIVE_STRIPE_WEBHOOK_SECRET; // LIVE WEBHOOK
+
+// TODO - need to pass in via route req.headers
+const CONNECT_ACCOUNT_ID = process.env.TEST_STRIPE_CONNECT_ACCOUNT_ID
+
 const functions = require('../services/functions');
 
 // Require database in router
@@ -8,7 +16,8 @@ const db = require('../models/index');
 const bodyParser = require('body-parser');
 const { response } = require('express');
 
-const TAX_RATE = 0.1;
+// const TAX_RATE = 0.1; 
+const TAX_RATE = parseFloat(process.env.AZ_TAX_RATE);
 
 function errorHandling(err) {
    console.log();
@@ -23,6 +32,7 @@ function errorHandling(err) {
         CHECKOUT ROUTES
 ==============================
 */
+// TODO - make this route general to work on all businesses, don't hard code connected account
 router.post('/checkout', async (req, res) => {
    // TODO - save the data of the user and their order in the database
    // console.log(req.body);
@@ -38,7 +48,7 @@ router.post('/checkout', async (req, res) => {
       }, 
       {
          // TODO - MAKE SURE YOU SEND THE CORRECT TEST ACCT ID - needs to be sent in req.headers or sum shit
-         stripeAccount: process.env.TEST_STRIPE_CONNECT_ACCOUNT_ID,
+         stripeAccount: CONNECT_ACCOUNT_ID,
       })
       .then( (paymentIntent) => {
       try {
@@ -55,9 +65,6 @@ router.post('/checkout', async (req, res) => {
       }
    });
 });
-
-const webhookSecret = process.env.TEST_STRIPE_WEBHOOK_SECRET; // TEST WEBHOOK
-// const webhookSecret = process.env.LIVE_STRIPE_WEBHOOK_SECRET; // LIVE WEBHOOK
 
 const handleSuccessfulPaymentIntent = (connectedAccountId, paymentIntent) => {
    // fulfill the purchase logic

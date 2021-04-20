@@ -4,7 +4,12 @@ const getStartedTodayButton = document.querySelector('#block-yui_3_17_2_1_161852
 const signUpForStripe = document.querySelector('#setup-payments');
 
 // do i gotta pull this string out??? or does it not matter since its the publishable key??
+
+// TEST KEY
 const stripe = Stripe('pk_test_51H0IWVL4UppL0br2bYSp1tlwvfoPwDEjfjPUx4ilY0zQr8LY0txFJjj9CHqPTP27ieDiTHhxQfNlaKSuPVcNkuq00071qG37ks')
+
+// LIVE KEY
+const stripe = Stripe('pk_live_51H0IWVL4UppL0br24eHsSMTrCwqn14x1ZO9Sss27X1lHVrX7dsIHRIOSKAqU9yoi4YwmDYsPq5wMOknK3L3XdV6E00EVOPuHvc);
 
 const createCheckoutSession = (priceId) => {
    return fetch("/api/signup-rhemi", {
@@ -23,9 +28,9 @@ const createCheckoutSession = (priceId) => {
 if (signUpForRhemi) {
    // PRICE ID - should be passed in somewhere huh?? 
    // prolly as a .env variable
-   const PRICE_ID = 'price_1IgabGL4UppL0br2v5JkOJHt';
+   const LIVE_PRICE_ID = 'price_1Ii9RtL4UppL0br25NNkXgJ9';
    signUpForRhemi.addEventListener("click", e => {
-      createCheckoutSession(PRICE_ID).then(data => {
+      createCheckoutSession(LIVE_PRICE_ID).then(data => {
          // Call Stripe.js method to redirect to the new Checkout page
          stripe.redirectToCheckout({
             sessionId: data.sessionId

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const stripe = require("stripe")(process.env.STRIPE_TEST_KEY)
+// const stripe = require("stripe")(process.env.STRIPE_TEST_KEY) // test key
+const stripe = require("stripe")(process.env.STRIPE_LIVE_KEY) // live key
 const functions = require('../services/functions');
 
 // Require database in router
