@@ -5,7 +5,6 @@ const ItemSchema = new mongoose.Schema({
       type: String,
       required: 'Item must have a name.'
    },
-   // TODO - think about how to manage prices for different sizes?? or just make two separate items?
    price: {
       type: Number,
       required: 'Item must have a price.'
@@ -19,9 +18,10 @@ const ItemSchema = new mongoose.Schema({
       availChoices: [{name: String, price: Number, selected: {type: Boolean, default: false} }], // the type of choices, each having a name, price (for price adder), and selected (boolean) key. e.g. if this is Meat then the availChioces will be [ {name: "Steak", price: 1, selected: false}, {name: "Chicken", price: 0, selected: false}, {name: "Shrimp", price: 2, selected: false}]
    }],
    config: { }, // config.kind.sides.choices to get the sides available or config.drinks.choices to get drinks avail
-   availableAddOns: {
-      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
-   },
+   // THIS SCHEMA IS NOT BEING USED RIGHT NOW
+   // availableAddOns: {
+   //    type: [{type: mongoose.Schema.Types.ObjectId, ref: 'ItemAddOn'}],
+   // },
    selectedAddOns: [{ }],
    size: {
       type: String

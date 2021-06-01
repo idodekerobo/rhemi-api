@@ -27,7 +27,7 @@ const orderRoutes = require('./routes/order.js');
 const menuRoutes = require('./routes/menu.js');
 const categoryRoutes = require('./routes/category.js');
 const itemRoutes = require('./routes/item.js');
-const itemAddOnRoutes = require('./routes/itemAddOn.js');
+// const itemAddOnRoutes = require('./routes/itemAddOn.js'); // DON'T USE ROUTES
 const checkoutRoutes = require('./routes/checkout.js');
 const restaurantRoutes = require('./routes/restaurant.js');
 const editRoutes = require('./routes/edit.js');
@@ -60,7 +60,7 @@ app.use('/api', orderRoutes);
 app.use('/api', menuRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', itemRoutes);
-app.use('/api', itemAddOnRoutes);
+// app.use('/api', itemAddOnRoutes); // DON'T USE ROUTES
 app.use('/api', checkoutRoutes);
 app.use('/api', restaurantRoutes);
 app.use('/api', editRoutes);

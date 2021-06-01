@@ -10,7 +10,9 @@ const webhookSecret = process.env.LIVE_STRIPE_WEBHOOK_SECRET; // LIVE WEBHOOK
 
 
 // TODO - need to pass in via route req.headers
-const CONNECT_ACCOUNT_ID = process.env.TEST_STRIPE_CONNECT_ACCOUNT_ID
+   // will get when ck's makes official account
+// const CONNECT_ACCOUNT_ID = process.env.TEST_STRIPE_CONNECT_ACCOUNT_ID;
+const CONNECT_ACCOUNT_ID = process.env.PROD_STRIPE_CONNECT_ACCOUNT_ID;
 
 const functions = require('../services/functions');
 

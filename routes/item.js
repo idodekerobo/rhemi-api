@@ -54,6 +54,7 @@ router.post('/items', (req, res) => {
       name: req.body.name,
       price: req.body.price,
       restaurantId: req.body.restaurantId,
+      description: req.body.description,
       // inStock: null, // defaults to true
       // onSale: null, // defaults to false
       // discount: 0, // defaults to zero

@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+/*
+///////////// NOT USING THIS MODEL, BUT WHEN I DON'T EXPORT IT I CAN'T GRAB THE MENU /////////////
+*/
 const ItemAddOnSchema = new mongoose.Schema({
    name: {
       type: String,

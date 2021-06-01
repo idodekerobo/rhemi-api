@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+/*
+///////////// NOT EXPORTING THESE ROUTES, NOT USING ITEM ADD ON SCHEMA /////////////
+*/
+
 // Require database in router
 const db = require('../models/index');
 
@@ -59,4 +63,5 @@ router.post('/itemaddons', (req, res) => {
    });
 });
 
-module.exports = router;
+// NOT EXPORTING THESE ROUTES. WILL BUILD THIS FEATURE OUT LATER
+// module.exports = router;
