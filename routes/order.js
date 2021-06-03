@@ -190,6 +190,7 @@ router.put('/order/:orderid', (req, res) => {
 
    // MAYBE THINK ABUT NOT ALLOWING UPDATES/CHANGES IF ORDER IS ALREADY SHOWN TO BE COMPLETE
    let updatedOrder = {
+      entered: req.body.entered,
       ready: req.body.ready,
       paid: req.body.paid,
       pickedUp: req.body.pickedUp,

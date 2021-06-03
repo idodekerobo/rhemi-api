@@ -53,6 +53,11 @@ const OrderSchema = new mongoose.Schema({
       type: Number,
       required: 'Must have a total price!'
    },
+   entered: {
+      type: Boolean,
+      default: false,
+      required: 'Need to know if the order has been started by the restaurant'
+   },
    ready: {
       type: Boolean,
       default: false,
