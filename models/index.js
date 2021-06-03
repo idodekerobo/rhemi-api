@@ -7,10 +7,10 @@ mongoose.set('debug', true); // allows us to see whats being sent to db
 // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true` by default, you need to set it to false.
 mongoose.set('useFindAndModify', false);
 
-const testDb =  process.env.MONGO_DB_TEST_CONN;
-// const prodDb = process.env.MONGO_DB_PROD_CONN;
-mongoose.connect(testDb, {
-// mongoose.connect(prodDb, {
+// const testDb =  process.env.MONGO_DB_TEST_CONN;
+const prodDb = process.env.MONGO_DB_PROD_CONN;
+// mongoose.connect(testDb, {
+mongoose.connect(prodDb, {
    useNewUrlParser: true,
    useUnifiedTopology: true
 })
