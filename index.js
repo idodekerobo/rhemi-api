@@ -6,6 +6,7 @@ require('dotenv').config();
 // const stripe = require("stripe")(process.env.STRIPE_TEST_KEY)
 const app = express();
 const PORT = process.env.PORT;
+const { socketConnection } = require('./services/socket-io');
 
 app.use(bodyParser.json({
    // adding middleware so can use raw body for webhook logic w/ stripe
@@ -84,6 +85,15 @@ app.use('/api', customerSignUpRoutes);
 // app.use('/public',express.static(path.join(__dirname,'/public')));
 
 // making server listen
-app.listen(PORT, () => {
+// const server = app.listen(PORT, () => {
+// app.listen(PORT, () => {
+//    console.log('Backend server is running on port', PORT);
+// });
+
+const httpServer = require("http").createServer(app);
+const options = { /* ... */ };
+socketConnection(httpServer, options);
+httpServer.listen(PORT, () => {
    console.log('Backend server is running on port', PORT);
 });
+// WARNING !!! app.listen(5000); will not work here, as it creates a new HTTP server
