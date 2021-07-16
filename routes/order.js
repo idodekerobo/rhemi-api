@@ -10,11 +10,11 @@ const db = require('../models/index');
 // EVERY URL STARTS WITH /API/
 
 function mongoDbErrorHandling(err) {
-      console.log();
-      console.log('There was an error on the node server!');
-      console.log(err);
-      console.log();
-      return res.send(500, { error: err });
+   console.log();
+   console.log('There was an error on the node server!');
+   console.log(err);
+   console.log();
+   return res.send(500, { error: err });
 }
 
 // MIDDLEWARE TO GET THE AUTH TOKEN FROM THE HEADER
@@ -44,7 +44,7 @@ const checkIfAuthorized = (req, res, next) => {
             const authObject = {
                authStatus: 'not authorized'
             }
-            return res.status(401).send(authObject);   
+            return res.status(401).send(authObject);
          })
       } catch (e) {
          console.log(`error.code ${e.code}`)
@@ -66,15 +66,15 @@ const checkIfAuthorized = (req, res, next) => {
 
 // getting all orders from database
 router.get('/order', (req, res) => {
-// router.get('/order', checkIfAuthorized, (req, res) => {
+   // router.get('/order', checkIfAuthorized, (req, res) => {
    db.Order.find()
    .exec()
-      .then((orders) => {
-         res.send(orders);
-      })
-      .catch((err) => {
-         res.send(err);
-      });
+   .then((orders) => {
+      res.send(orders);
+   })
+   .catch((err) => {
+      res.send(err);
+   });
 });
 
 // get a specific order
@@ -93,7 +93,7 @@ router.get('/order/:orderid', (req, res) => {
 });
 
 // sending order to database
-router.post('/order', (req, res) => {
+router.post('/order', async (req, res) => {
    const priceObj = functions.calculateOrderAmount(req.body.items);
 
    // TODO - need to map EACH ORDER TO A RESTAURANT
@@ -118,50 +118,52 @@ router.post('/order', (req, res) => {
       totalCost: priceObj.total,
    });
 
-   order
-      .save()
-      .then(result => {
-         console.log('Latest order saved to database');
-         // console.log(result);
-      })
-      .catch(err => {
-         mongoDbErrorHandling(err);
-   });
+   let savedOrder;
+   try {
+      savedOrder = await order.save();
+   } catch (e) {
+      mongoDbErrorHandling(e)
+   }
 
+   // taking order and sending notification to the restaurant's devices
    // grab token from restaurant object
-   // let restaurantPushTokens, restaurantName;
-   // db.Restaurant.findById(restaurantId, 'pushTokens')
    db.Restaurant.findById(restaurantId)
    .exec()
    .then(restaurantObj => {
-      // restaurantPushTokens = tokenArr;
       const tokenArr = restaurantObj.pushNotifTokens;
 
       // only run this if any token arrs are present
       if (tokenArr.length > 0) {
          // https://github.com/expo/expo-server-sdk-node
-         let messages = [ ];
+         let messages = [];
          // execute for each token in the tokenArr returned
+         console.log('token arr')
+         console.log(tokenArr)
          for (token of tokenArr) {
             let newMsg = {
                to: token,
                sound: 'default',
                title: `A new order came in from ${req.body.firstName}!`,
                subtitle: 'Go to the Rhemi app to see!',
-               // data: { }
+               data: { // max payload size is 4KB
+                  _id: savedOrder._id,
+                  firstName: savedOrder.firstName,
+                  lastName: savedOrder.lastName,
+               }
             }
             messages.push(newMsg);
          }
-         
+
          // SEND PUSH NOTIF THAT AN ORDER CAME IN
          let chunks = expo.chunkPushNotifications(messages);
-         let tickets = [ ];
+         let tickets = [];
          (async () => {
             // send chunks to the expo push notif service
             for (let chunk of chunks) {
                try {
                   let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-                  console.log(`this is the ticket chunk ${ticketChunk}`)
+                  console.log(`this is the ticket chunk`)
+                  console.log(ticketChunk)
                   tickets.push(...ticketChunk);
                } catch (e) {
                   // TODO - need to handle errors appropriately
@@ -172,11 +174,9 @@ router.post('/order', (req, res) => {
          })();
       }
    })
-   // .catch(err => mongoDbErrorHandling(err))
    .catch(err => {
       console.log(`there was an error getting the restauarant push tokens ${err}`);
    })
-
 
    // res.redirect( [redirect page]);
    res.send('client side response: order has been saved to the database');
